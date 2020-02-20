@@ -1,0 +1,11 @@
+extends layout
+block content
+    each conference in conferences
+        .name #{conference.name}
+        .date #{conference.date}
+        .debut #{conference.debut}
+        .fin #{conference.fin}
+        a(href="/chat/#{conference.port}") go to the chat
+        br
+    br
+    a(href="/conferences/create") create a conference

@@ -1,0 +1,17 @@
+extends layout
+block content
+    script(src="https://code.jquery.com/jquery-1.11.1.js")
+    script(src="/javascripts/socket.io.js")
+    script(src="/javascripts/mySocket.js")
+    .name #{conference.name}
+    .date #{conference.date}
+    .debut #{conference.debut}
+    .fin #{conference.fin}
+    br
+    a(href="/conferences") Go back to conferences 
+    h2 Chat
+    #Chat
+        ul#messages
+        form(action="")
+            input(autocomplete="off")#m
+            button Send

@@ -2,12 +2,34 @@ var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
+var http = require('http').createServer();
 var logger = require('morgan');
+const mongoose = require('mongoose');
+const io = require('socket.io')(http)
+
+
+io.on('connection', function(socket){
+  console.log('a user connected');
+  socket.on('disconnect', function(){
+    console.log('user disconnected');
+  });
+  socket.on('chat message', function(msg){
+    console.log('message')
+    io.emit('chat message', msg);
+  });
+});
+
+http.listen(3002, function(){
+  console.log(`listening on *:${3002}`);
+});
+
+
 
 var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
 
 var app = express();
+mongoose.connect('mongodb://localhost:27017/tpConf', { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => console.log('Connexion à la base de donnée : Succés'));
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -18,9 +40,21 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*"); // update to match the domain you will make the request from 
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization"); 
+  next();
+});
+
+
+
+
+
+
 
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
+
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -37,5 +71,7 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
+
+
 
 module.exports = app;
